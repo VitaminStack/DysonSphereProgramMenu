@@ -325,6 +325,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="config.txt" />
+    <Content Include="Menu.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
