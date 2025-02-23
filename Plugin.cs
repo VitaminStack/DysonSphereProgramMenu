@@ -117,7 +117,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
                 mainMenuRect = UIHelper.CreateWindow(0, mainMenuRect, MainMenuWindow, "Main Menu");
             }
         }
-
         private static void MainMenuWindow(int windowID)
         {
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
