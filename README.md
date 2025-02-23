@@ -13,10 +13,10 @@ Achievments are activated(can be disabled), so be carefully with the cheating/Un
 The Config File is set to 2x BeltSpeed
 
 ModdedMecha got the following mods:
-MaxCoreEnergie
-MaxHP
-NoBulletCost
-bulletDamageScale = 100x
-replicateSpeed = 30X
+MaxCoreEnergie,
+MaxHP,
+NoBulletCost,
+bulletDamageScale = 100x,
+replicateSpeed = 30X,
 
 <img src="Menu.PNG"/>
