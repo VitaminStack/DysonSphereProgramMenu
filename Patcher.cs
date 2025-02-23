@@ -162,7 +162,7 @@ namespace DysonSphereProgramMenuMod
         }
     }
 
-    
+
     [HarmonyPatch(typeof(CombatSettings), "get_aggressiveLevel")]
     public static class CombatSettings_GetAggressiveLevel_Patch
     {
@@ -219,7 +219,7 @@ namespace DysonSphereProgramMenuMod
 
             if (DysonSphereProgramMenu.MechaModded)
             {
-                
+
 
                 // Mecha-Anpassungen
                 __instance.coreEnergy = __instance.coreEnergyCap; // Immer volle Energie
@@ -228,7 +228,7 @@ namespace DysonSphereProgramMenuMod
                 __instance.bulletEnergyCost = 0; // Keine Energiekosten für Schüsse
                 __instance.bulletDamageScale = 100.0f; // 100-facher Schaden
             }
-            
+
 
             if (DysonSphereProgramMenu.UnlockAll)
             {
@@ -348,6 +348,88 @@ namespace DysonSphereProgramMenuMod
             if (DysonSphereProgramMenu.DebugMode)
             {
                 VitaminLogger.LogInfo("[Patch Applied] GameAbnormalityData_0925.CheckAbnormality erfolgreich gepatcht.");
+            }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(UIReplicatorWindow), "OnOkButtonClick")]
+    public static class UIReplicator_OnOkButtonClick_Patch
+    {
+        // Felder für Reflection
+        private static FieldInfo selectedRecipeField = AccessTools.Field(typeof(UIReplicatorWindow), "selectedRecipe");
+        private static FieldInfo multipliersField = AccessTools.Field(typeof(UIReplicatorWindow), "multipliers");
+        private static FieldInfo mechaForgeField = AccessTools.Field(typeof(UIReplicatorWindow), "mechaForge");
+        private static FieldInfo isBatchField = AccessTools.Field(typeof(UIReplicatorWindow), "isBatch");
+
+        static bool Prefix(UIReplicatorWindow __instance, int whatever, bool button_enable)
+        {
+            if (!DysonSphereProgramMenu.FreeCrafting) return true; // Falls deaktiviert, Patch ignorieren.
+
+            RecipeProto selectedRecipe = selectedRecipeField.GetValue(__instance) as RecipeProto;
+            if (selectedRecipe == null || GameMain.isFullscreenPaused)
+            {
+                return false; // Crafting stoppen
+            }
+
+            int id = selectedRecipe.ID;
+            int num = 1;
+
+            Dictionary<int, int> multipliers = multipliersField.GetValue(__instance) as Dictionary<int, int>;
+            if (multipliers != null && multipliers.ContainsKey(id))
+            {
+                num = multipliers[id];
+            }
+
+            num = Mathf.Clamp(num, 1, 10); // Sicherstellen, dass num zwischen 1 und 10 bleibt
+
+            Player mainPlayer = GameMain.mainPlayer;
+            if (mainPlayer == null || mainPlayer.mecha == null)
+            {
+                return false;
+            }
+
+            RecipeProto recipeProto = LDB.recipes.Select(id);
+            bool isBatch = (bool)isBatchField.GetValue(__instance);
+
+            // 1️⃣ **Unbegrenztes Instant-Crafting ohne Materialverbrauch**
+            for (int i = 0; i < recipeProto.Results.Length; i++)
+            {
+                int itemId = recipeProto.Results[i];
+                int stackSize = LDB.items.Select(itemId).StackSize;
+                int craftAmount = isBatch ? (num * stackSize) : num;
+                int remaining = mainPlayer.TryAddItemToPackage(itemId, craftAmount, 0, true, 0, false);
+                int successfullyAdded = craftAmount - remaining;
+
+                if (successfullyAdded > 0)
+                {
+                    UIItemup.Up(itemId, successfullyAdded);
+                    mainPlayer.mecha.AddProductionStat(itemId, successfullyAdded, mainPlayer.nearestFactory);
+                }
+            }
+
+            // 2️⃣ **Erzwinge das Craften auch ohne freigeschaltete Rezepte oder Ressourcen**
+            object mechaForge = mechaForgeField.GetValue(__instance);
+            if (mechaForge != null)
+            {
+                MethodInfo addTaskMethod = AccessTools.Method(mechaForge.GetType(), "AddTask");
+                addTaskMethod?.Invoke(mechaForge, new object[] { id, num });
+            }
+
+            // 3️⃣ **Registriere das Crafting für Achievements oder Statistiken**
+            GameMain.history.RegFeatureKey(1000104);
+
+            return false; // Original-Methode NICHT ausführen
+        }
+
+        /// <summary>
+        /// Erfolgsprüfung des Patches, nur einmalig geloggt.
+        /// </summary>
+        static UIReplicator_OnOkButtonClick_Patch()
+        {
+            if (DysonSphereProgramMenu.DebugMode)
+            {
+                VitaminLogger.LogInfo("[Patch Applied] UIReplicator.OnOkButtonClick erfolgreich gepatcht.");
             }
         }
     }

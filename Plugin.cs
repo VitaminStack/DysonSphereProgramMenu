@@ -33,7 +33,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     public static bool RocketExportModded = false;
     public static bool BeltSpeedMod;
 
-
+    public static bool FreeCrafting = false;
     public static bool FastMining = false;
 
     public static bool UnlockAll;
@@ -97,6 +97,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         passiveEnemy = GUILayout.Toggle(passiveEnemy, "Passive Enemy");
         achievementToggle = GUILayout.Toggle(achievementToggle, "Get Achievements?");
         FastMining = GUILayout.Toggle(FastMining, "FastMining");
+        FreeCrafting = GUILayout.Toggle(FreeCrafting, "FreeCrafting");
         if (GUILayout.Button("UnlockAll"))
         {
             UnlockAll = true;
