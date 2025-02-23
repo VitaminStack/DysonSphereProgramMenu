@@ -21,9 +21,6 @@ namespace DysonSphereProgramMenuMod
 
             try
             {
-
-
-
                 // Patch für EjectorComponent.InternalUpdate (Prefix)
                 MethodInfo ejectorMethod = AccessTools.Method(typeof(EjectorComponent), "InternalUpdate", new Type[] { typeof(float), typeof(long), typeof(DysonSwarm), typeof(AstroData[]), typeof(AnimData[]), typeof(int[]) });
                 MethodInfo ejectorPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorPrefix));
@@ -39,15 +36,6 @@ namespace DysonSphereProgramMenuMod
                 // Patch für SiloComponent.Export (Prefix)
                 MethodInfo rocketExportMethod = AccessTools.Method(typeof(SiloComponent), "Export", new Type[] { typeof(BinaryWriter) });
                 MethodInfo rocketExportPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketExportPrefix));
-                
-
-
-
-
-
-
-
-
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
 
@@ -61,8 +49,6 @@ namespace DysonSphereProgramMenuMod
     public static class Patches
     {
         static bool DebugMode = true;
-
-
 
         public static bool EjectorPrefix(ref EjectorComponent __instance, float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
         {
@@ -102,10 +88,6 @@ namespace DysonSphereProgramMenuMod
             }
             return true;
         }
-
-
-
-
     }
     public static class DroneComponent_InternalUpdate_Patch
     {
