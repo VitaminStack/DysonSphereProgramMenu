@@ -149,36 +149,41 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         public static void LoadConfig()
         {
-            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/VitaminMenu/config.txt");
-            if (File.Exists(configPath))
-            {
-                string customPath = File.ReadAllText(configPath).Trim();
-                string[] lines = customPath.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
+            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
 
-                foreach (var line in lines)
+            // Prüfen, ob die Config-Datei existiert; falls nicht, Standard-Konfiguration erstellen
+            if (!File.Exists(configPath))
+            {
+                // Standardwerte: BeltMod deaktiviert, Beltmultiplier auf 1
+                string defaultConfig = "BeltMod:true" + System.Environment.NewLine + "Beltmultiplier:2";
+                File.WriteAllText(configPath, defaultConfig);
+                VitaminLogger.LogInfo("Config file not found. A default config file has been created.");
+            }
+
+            // Konfiguration einlesen
+            string customPath = File.ReadAllText(configPath).Trim();
+            string[] lines = customPath.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("BeltMod"))
                 {
-                    if (line.StartsWith("BeltMod"))
+                    string[] parts = line.Split(':');
+                    if (parts.Length == 2)
                     {
-                        string[] parts = line.Split(':');
-                        if (parts.Length == 2)
-                        {
-                            BeltSpeedMod = parts[1].Trim() == "1";
-                        }
+                        BeltSpeedMod = parts[1].Trim() == "1";
                     }
-                    if (line.StartsWith("Beltmultiplier"))
+                }
+                if (line.StartsWith("Beltmultiplier"))
+                {
+                    string[] parts = line.Split(':');
+                    if (parts.Length == 2)
                     {
-                        string[] parts = line.Split(':');
-                        if (parts.Length == 2)
-                        {
-                            int.TryParse(parts[1].Trim(), out BeltMultiplier);
-                        }
+                        int.TryParse(parts[1].Trim(), out BeltMultiplier);
                     }
                 }
             }
-            else
-            {
-                VitaminLogger.LogInfo("Could not find Config File!");
-            }
         }
+
     }
 }

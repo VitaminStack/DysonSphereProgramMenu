@@ -332,7 +332,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /I "$(TargetPath)" "F:\SteamLibrary\steamapps\common\Dyson Sphere Program\BepInEx\plugins\VitaminMenu\"
+    <PostBuildEvent>xcopy /Y /I "$(TargetPath)" "F:\SteamLibrary\steamapps\common\Dyson Sphere Program\BepInEx\plugins\DysonMenu\"
 xcopy /Y /I "$(TargetPath)" "F:\Cheese\SELFAMDE\Modding Projekte\DysonSphereProgramMenu\DysonSphereProgramMenu\Build\"
 </PostBuildEvent>
   </PropertyGroup>
