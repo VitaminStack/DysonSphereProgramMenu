@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using Steamworks;
+using static DysonSphereProgramMenu;
 
 
 
@@ -52,46 +53,27 @@ namespace DysonSphereProgramMenuMod
 
         public static bool EjectorPrefix(ref EjectorComponent __instance, float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
         {
-            if (DysonSphereProgramMenu.EjectorModded)
-            {
-                UnityEngine.Debug.Log("EjectorPrefix: Anpassung des Ejektor-Verhaltens.");
-                // Beispielhafte Anpassung: Parameter modifizieren oder Logging einbauen.
-            }
+            
             return true;
         }
         public static bool RocketPrefix(ref SiloComponent __instance, float power, DysonSphere sphere, AnimData[] animPool, int[] consumeRegister)
         {
-            if (DysonSphereProgramMenu.RocketModded)
-            {
-                UnityEngine.Debug.Log("RocketPrefix: Anpassung der Silo/Raketen-Komponente.");
-                // Beispiel: Modifikationen vor der Ausführung der Originalmethode.
-            }
+            
             return true;
         }
         public static bool EjectorExportPrefix(ref EjectorComponent __instance, ref BinaryWriter w)
         {
-            if (DysonSphereProgramMenu.EjectorExportModded)
-            {
-                UnityEngine.Debug.Log("EjectorExportPrefix: Custom Export für EjectorComponent.");
-                // Beispielhafte eigene Exportlogik – hier Dummy-Daten schreiben:
-                return false; // Originalexport-Methode unterdrücken
-            }
+            
             return true;
         }
         public static bool RocketExportPrefix(ref SiloComponent __instance, ref BinaryWriter w)
         {
-            if (DysonSphereProgramMenu.RocketExportModded)
-            {
-                UnityEngine.Debug.Log("RocketExportPrefix: Custom Export für SiloComponent.");
-                // Beispiel: Dummy-Daten schreiben
-                return false;
-            }
+            
             return true;
         }
     }
     public static class DroneComponent_InternalUpdate_Patch
     {
-        private static float cachedDronespeed = 0.0f;
 
         public static void ApplyPatch(Harmony harmony)
         {
@@ -122,16 +104,12 @@ namespace DysonSphereProgramMenuMod
 
         static bool Prefix(ref DroneComponent __instance, ref float droneSpeed)
         {
-
-            if (cachedDronespeed == 0.0f)
-            {
-                cachedDronespeed = droneSpeed;
-            }
-
-            droneSpeed *= DysonSphereProgramMenu.DroneSlider;
+            
+            droneSpeed = droneSpeed * DysonSphereProgramMenu.MainMenuUI.DroneSlider;
 
             return true; // Originalmethode weiterhin ausführen.
         }
+        
     }
 
 
@@ -142,7 +120,7 @@ namespace DysonSphereProgramMenuMod
 
         static void Prefix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MainMenuUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
@@ -153,7 +131,7 @@ namespace DysonSphereProgramMenuMod
 
         static void Postfix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MainMenuUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
@@ -168,9 +146,9 @@ namespace DysonSphereProgramMenuMod
     {
         static bool Prefix(ref EAggressiveLevel __result, CombatSettings __instance)
         {
-            if (!DysonSphereProgramMenu.passiveEnemy) return true; // Falls deaktiviert, Patch ignorieren
+            if (!DysonSphereProgramMenu.MainMenuUI.passiveEnemy) return true; // Falls deaktiviert, Patch ignorieren
 
-            __result = (EAggressiveLevel)(DysonSphereProgramMenu.passiveEnemy ? 10.0f : (__instance.aggressiveness + 1f) * 10f + 0.5f);
+            __result = (EAggressiveLevel)(DysonSphereProgramMenu.MainMenuUI.passiveEnemy ? 10.0f : (__instance.aggressiveness + 1f) * 10f + 0.5f);
             return false; // Originalmethode nicht ausführen, da __result überschrieben wurde
         }
     }
@@ -181,12 +159,12 @@ namespace DysonSphereProgramMenuMod
     {
         static void Postfix(ref PrefabDesc __instance, GameObject _prefab, GameObject _colliderPrefab)
         {
-            if (!DysonSphereProgramMenu.BeltSpeedMod) return; // Falls deaktiviert, Patch ignorieren
+            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod) return; // Falls deaktiviert, Patch ignorieren
 
             BeltDesc belt = __instance.prefab.GetComponentInChildren<BeltDesc>(true);
             if (belt != null)
             {
-                __instance.beltSpeed = belt.speed * DysonSphereProgramMenu.BeltMultiplier;
+                __instance.beltSpeed = belt.speed * DysonSphereProgramMenu.MainMenuUI.BeltMultiplier;
             }
         }
         // Wird beim Laden des Patches ausgeführt, um zu prüfen, ob der Patch erfolgreich war.
@@ -217,7 +195,7 @@ namespace DysonSphereProgramMenuMod
             originalbulletEnergyCost = __instance.bulletEnergyCost;
             originalbulletDamageScale = __instance.bulletDamageScale;
 
-            if (DysonSphereProgramMenu.MechaModded)
+            if (DysonSphereProgramMenu.MainMenuUI.MechaModded)
             {
 
 
@@ -230,7 +208,7 @@ namespace DysonSphereProgramMenuMod
             }
 
 
-            if (DysonSphereProgramMenu.UnlockAll)
+            if (DysonSphereProgramMenu.MainMenuUI.UnlockAll)
             {
                 if (DysonSphereProgramMenu.DebugMode)
                     VitaminLogger.LogInfo("UnlockAll enabled: processing tech unlocks.");
@@ -308,7 +286,7 @@ namespace DysonSphereProgramMenuMod
                         }
                     }
                 }
-                DysonSphereProgramMenu.UnlockAll = false;
+                DysonSphereProgramMenu.MainMenuUI.UnlockAll = false;
                 if (DysonSphereProgramMenu.DebugMode)
                     VitaminLogger.LogInfo("All techs unlocked.");
             }
@@ -335,7 +313,7 @@ namespace DysonSphereProgramMenuMod
     {
         static bool Prefix()
         {
-            if (DysonSphereProgramMenu.achievementToggle)
+            if (DysonSphereProgramMenu.MainMenuUI.achievementToggle)
             {
                 // Wenn aktiviert, wird der Code blockiert und das Achievement nicht gespeichert.
                 return false;
@@ -364,7 +342,7 @@ namespace DysonSphereProgramMenuMod
 
         static bool Prefix(UIReplicatorWindow __instance, int whatever, bool button_enable)
         {
-            if (!DysonSphereProgramMenu.FreeCrafting) return true; // Falls deaktiviert, Patch ignorieren.
+            if (!DysonSphereProgramMenu.MainMenuUI.FreeCrafting) return true; // Falls deaktiviert, Patch ignorieren.
 
             RecipeProto selectedRecipe = selectedRecipeField.GetValue(__instance) as RecipeProto;
             if (selectedRecipe == null || GameMain.isFullscreenPaused)
@@ -422,14 +400,48 @@ namespace DysonSphereProgramMenuMod
             return false; // Original-Methode NICHT ausführen
         }
 
-        /// <summary>
-        /// Erfolgsprüfung des Patches, nur einmalig geloggt.
-        /// </summary>
         static UIReplicator_OnOkButtonClick_Patch()
         {
             if (DysonSphereProgramMenu.DebugMode)
             {
                 VitaminLogger.LogInfo("[Patch Applied] UIReplicator.OnOkButtonClick erfolgreich gepatcht.");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerController), "GameTick")]
+    public static class PlayerMove_Walk_GameTick_Patch
+    {
+        private static float originalWalkSpeed;
+        private static float originalmaxSailSpeed;
+        private static float originalmaxWarpSpeed;
+
+        static void Prefix(PlayerController __instance)
+        {
+            
+            // Original WalkSpeed speichern
+            originalWalkSpeed = __instance.player.mecha.walkSpeed;
+            originalmaxSailSpeed = __instance.player.mecha.maxSailSpeed;
+            originalmaxWarpSpeed = __instance.player.mecha.maxWarpSpeed;
+
+            __instance.player.mecha.walkSpeed = originalWalkSpeed * MovementMenuUI.MechaSpeed;
+            __instance.player.mecha.maxSailSpeed = originalmaxSailSpeed * MovementMenuUI.SailSpeed;
+            __instance.player.mecha.maxWarpSpeed = originalmaxWarpSpeed * MovementMenuUI.WarpSpeed;
+        }
+
+        static void Postfix(PlayerController __instance)
+        {
+            
+            __instance.player.mecha.walkSpeed = originalWalkSpeed;
+            __instance.player.mecha.maxSailSpeed = originalmaxSailSpeed;
+            __instance.player.mecha.maxWarpSpeed = originalmaxWarpSpeed;
+        }
+
+        static PlayerMove_Walk_GameTick_Patch()
+        {
+            if (DysonSphereProgramMenu.DebugMode)
+            {
+                VitaminLogger.LogInfo("[Patch Applied] PlayerMove_Walk.GameTick erfolgreich gepatcht.");
             }
         }
     }

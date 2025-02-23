@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\SteamLibrary\steamapps\common\Dyson Sphere Program\BepInEx\plugins\VitaminMenu\</OutputPath>
+    <OutputPath>.\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -327,5 +327,13 @@
     <Content Include="config.txt" />
     <Content Include="Menu.PNG" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Build\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /I "$(TargetPath)" "F:\SteamLibrary\steamapps\common\Dyson Sphere Program\BepInEx\plugins\VitaminMenu\"
+xcopy /Y /I "$(TargetPath)" "F:\Cheese\SELFAMDE\Modding Projekte\DysonSphereProgramMenu\DysonSphereProgramMenu\Build\"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
