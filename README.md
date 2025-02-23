@@ -8,13 +8,15 @@ Need BepinEx to Work. https://github.com/BepInEx/BepInEx
 
 Insert key - Toggle "show Menu"
 
-Modded Mech Features: <br>
--Mecha Miningspeed * 2 <br>
--Mecha Walkspeed * 1.3 <br>
--Mecha CraftSpeed * 10 <br>
--Mecha Energy always Max <br>
--Mecha HP always Max <br>
--Mecha Laser Rapidfire <br>
--Mecha Laser Damage * 10 <br>
+Achievments are activated(can be disabled), so be carefully with the cheating/Unlock all(u will get achievments Unlocked)
+
+The Config File is set to 2x BeltSpeed
+
+ModdedMecha got the following mods:
+MaxCoreEnergie,
+MaxHP,
+NoBulletCost,
+bulletDamageScale = 100x,
+replicateSpeed = 30X,
 
 <img src="Menu.PNG"/>
