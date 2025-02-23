@@ -149,7 +149,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         public static void LoadConfig()
         {
-            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
+            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenuconfig.txt");
 
             // Prüfen, ob die Config-Datei existiert; falls nicht, Standard-Konfiguration erstellen
             if (!File.Exists(configPath))
