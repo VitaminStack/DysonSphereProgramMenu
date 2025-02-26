@@ -40,12 +40,18 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     {
         MovementMenuUI.Draw();
         MainMenuUI.Draw();
+        MiscUI.Draw();  // Füge das neue MiscUI-Fenster hinzu
     }
+
 
     public static class UIHelper
     {
         private static float referenceWidth = 1920f;
         private static float referenceHeight = 1080f;
+
+        private static GUIStyle highlightedToggle;
+        private static GUIStyle defaultToggle;
+        private static GUIStyle sectionStyle;
 
         public static Rect CreateWindow(int id, Rect windowRect, GUI.WindowFunction windowFunction, string title)
         {
@@ -61,10 +67,144 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUI.matrix = originalMatrix;
             return windowRect;
         }
+
+        public static void InitializeStyles()
+        {
+            if (highlightedToggle == null)
+            {
+                highlightedToggle = new GUIStyle(GUI.skin.toggle) { fontStyle = FontStyle.Bold };
+                highlightedToggle.normal.textColor = Color.white;
+                highlightedToggle.hover.textColor = Color.green;
+                highlightedToggle.onNormal.textColor = Color.green;
+                highlightedToggle.onHover.textColor = Color.yellow;
+
+                defaultToggle = new GUIStyle(GUI.skin.toggle);
+                defaultToggle.normal.textColor = Color.white;
+
+                sectionStyle = new GUIStyle(GUI.skin.box)
+                {
+                    padding = new RectOffset(10, 10, 10, 10),
+                    margin = new RectOffset(10, 10, 10, 10)
+                };
+            }
+        }
+
+        public static void DrawUI(ref Rect windowRect, int id, bool isVisible, GUI.WindowFunction windowFunction, string title)
+        {
+            if (isVisible)
+            {
+                windowRect = CreateWindow(id, windowRect, windowFunction, title);
+            }
+        }
+
+        public static GUIStyle GetSectionStyle() => sectionStyle;
+        public static GUIStyle GetHighlightedToggle() => highlightedToggle;
+        public static GUIStyle GetDefaultToggle() => defaultToggle;
+    }
+    public class MainMenuUI
+    {
+        private static Rect mainMenuRect = new Rect(Screen.width - 250, 50, 200, 250);
+        public static bool IsVisible = true;
+        public static bool MovementMenu = false;
+        public static bool UnlockAll = false;
+
+        // Nicht sichtbare Werte (Konfiguration)
+        public static bool BeltSpeedMod = false;
+        public static int BeltMultiplier = 1;
+        private static bool configLoaded = false;
+
+        public static void Draw()
+        {
+            if (!configLoaded)
+            {
+                LoadConfig();
+                configLoaded = true;
+            }
+
+            UIHelper.DrawUI(ref mainMenuRect, 0, IsVisible, MainMenuWindow, "Main Menu");
+        }
+
+        private static void MainMenuWindow(int windowID)
+        {
+            UIHelper.InitializeStyles();
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
+
+            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
+
+            // Menü-Toggles mit Highlight
+            MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+            MovementMenu = GUILayout.Toggle(MovementMenu, "➡ Movement Menu", MovementMenu ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Unlock All"))
+            {
+                UnlockAll = true;
+                VitaminLogger.LogInfo("UnlockAll activated!");
+            }
+
+            GUILayout.EndVertical();
+        }
+
+        public static void LoadConfig()
+        {
+            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
+
+            if (!File.Exists(configPath))
+            {
+                File.WriteAllText(configPath, "BeltMod:true\nBeltmultiplier:2");
+                VitaminLogger.LogInfo("Config file not found. Created default config.");
+            }
+
+            foreach (var line in File.ReadAllLines(configPath))
+            {
+                string[] parts = line.Split(':');
+                if (parts.Length == 2)
+                {
+                    if (line.StartsWith("BeltMod")) BeltSpeedMod = parts[1].Trim().ToLower() == "true";
+                    if (line.StartsWith("Beltmultiplier")) int.TryParse(parts[1].Trim(), out BeltMultiplier);
+                }
+            }
+
+            VitaminLogger.LogInfo($"Config Loaded: BeltSpeedMod={BeltSpeedMod}, BeltMultiplier={BeltMultiplier}");
+        }
+    }
+    public class MiscUI
+    {
+        private static Rect miscMenuRect = new Rect(Screen.width - 250, 320, 200, 200);
+        public static bool IsVisible = false;
+
+        public static float DroneSlider = 1.0f;
+        public static bool MechaModded = false;
+        public static bool PassiveEnemy = false;
+        public static bool AchievementToggle = true;
+        public static bool FastMining = false;
+        public static bool FreeCrafting = false;
+        public static bool NoRequiredDirt = false;
+
+        public static void Draw() => UIHelper.DrawUI(ref miscMenuRect, 1, IsVisible, MiscMenuWindow, "Misc Settings");
+
+        private static void MiscMenuWindow(int windowID)
+        {
+            UIHelper.InitializeStyles();
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
+
+            GUILayout.Label("Drone Speed: " + DroneSlider.ToString("0.00") + "x");
+            DroneSlider = GUILayout.HorizontalSlider(DroneSlider, 0.1f, 10.0f);
+
+            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
+            MechaModded = GUILayout.Toggle(MechaModded, "Modded Mech");
+            PassiveEnemy = GUILayout.Toggle(PassiveEnemy, "Passive Enemy");
+            AchievementToggle = GUILayout.Toggle(AchievementToggle, "Get Achievements?");
+            FastMining = GUILayout.Toggle(FastMining, "Fast Mining");
+            FreeCrafting = GUILayout.Toggle(FreeCrafting, "Free Crafting");
+            NoRequiredDirt = GUILayout.Toggle(NoRequiredDirt, "No Dirt Required");
+            GUILayout.EndVertical();
+        }
     }
     public class MovementMenuUI
     {
-        private static Rect movementMenuRect = new Rect(Screen.width - 405, 50, 150, 150);
+        private static Rect movementMenuRect = new Rect(Screen.width - 250, 540, 200, 220);
         public static bool IsVisible = false;
 
         public static float MechaSpeed = 1f;
@@ -73,117 +213,27 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         public static void Draw()
         {
-            if (MainMenuUI.MovementMenu)
-            {
-                movementMenuRect = UIHelper.CreateWindow(1, movementMenuRect, MovementMenuWindow, "Movement Settings");
-            }
+            IsVisible = MainMenuUI.MovementMenu;
+            UIHelper.DrawUI(ref movementMenuRect, 2, IsVisible, MovementMenuWindow, "Movement Settings");
         }
 
         private static void MovementMenuWindow(int windowID)
         {
-            if(MainMenuUI.MovementMenu)
-            {
-                GUI.DragWindow(new Rect(0, 0, 10000, 20));
-                GUILayout.Label("WalkSpeed: " + MechaSpeed.ToString("0.00") + "x");
-                MechaSpeed = GUILayout.HorizontalSlider(MechaSpeed, 1f, 10f);
-                GUILayout.Label("MaxSail: " + SailSpeed.ToString("0.00") + "x");
-                SailSpeed = GUILayout.HorizontalSlider(SailSpeed, 1f, 5f);
-                GUILayout.Label("MaxWarp: " + WarpSpeed.ToString("0.00") + "x");
-                WarpSpeed = GUILayout.HorizontalSlider(WarpSpeed, 1f, 5f);
-            }           
-        }
-    }
-    public class MainMenuUI
-    {
-        private static Rect mainMenuRect = new Rect(Screen.width - 250, 50, 200, 200);
-        public static bool IsVisible = true;
-
-        public static bool BeltSpeedMod = false;
-        public static int BeltMultiplier = 1;
-
-        public static float DroneSlider = 1.0f;        
-        public static bool MechaModded = false;
-        public static bool passiveEnemy = false;
-        public static bool achievementToggle = true;
-        public static bool FastMining = false;
-        public static bool FreeCrafting = false;
-        public static bool MovementMenu = false;
-        public static bool UnlockAll = false;
-
-        public static void Draw()
-        {
-            if (isMenuVisible)
-            {
-                mainMenuRect = UIHelper.CreateWindow(0, mainMenuRect, MainMenuWindow, "Main Menu");
-            }
-        }
-        private static void MainMenuWindow(int windowID)
-        {
+            UIHelper.InitializeStyles();
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
 
-            GUILayout.Label("DroneSpeed");
-            GUILayout.BeginHorizontal();
-            DroneSlider = GUILayout.HorizontalSlider(DroneSlider, 0.1f, 10.0f);
-            GUILayout.Label(DroneSlider.ToString("0.00") + "x Speed");
-            GUILayout.EndHorizontal();
+            GUILayout.Label("Mecha Speed: " + MechaSpeed.ToString("0.00") + "x");
+            MechaSpeed = GUILayout.HorizontalSlider(MechaSpeed, 1f, 10f);
 
-            GUILayout.Label("BeltMultiplier: " + BeltMultiplier.ToString());
-            MechaModded = GUILayout.Toggle(MechaModded, "Modded Mech");
+            GUILayout.Label("Max Sail Speed: " + SailSpeed.ToString("0.00") + "x");
+            SailSpeed = GUILayout.HorizontalSlider(SailSpeed, 1f, 5f);
 
-            passiveEnemy = GUILayout.Toggle(passiveEnemy, "Passive Enemy");
-            achievementToggle = GUILayout.Toggle(achievementToggle, "Get Achievements?");
-            FastMining = GUILayout.Toggle(FastMining, "FastMining");
-            FreeCrafting = GUILayout.Toggle(FreeCrafting, "FreeCrafting");
-
-            MovementMenu = GUILayout.Toggle(MovementMenu, "MovementMenu");
-            if (MovementMenu)
-            {
-                MovementMenuUI.IsVisible = true;
-            }
-            if (GUILayout.Button("UnlockAll"))
-            {
-                UnlockAll = true;
-            }
-
+            GUILayout.Label("Max Warp Speed: " + WarpSpeed.ToString("0.00") + "x");
+            WarpSpeed = GUILayout.HorizontalSlider(WarpSpeed, 1f, 5f);
         }
-
-        public static void LoadConfig()
-        {
-            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
-
-            // Prüfen, ob die Config-Datei existiert; falls nicht, Standard-Konfiguration erstellen
-            if (!File.Exists(configPath))
-            {
-                // Standardwerte: BeltMod deaktiviert, Beltmultiplier auf 1
-                string defaultConfig = "BeltMod:true" + System.Environment.NewLine + "Beltmultiplier:2";
-                File.WriteAllText(configPath, defaultConfig);
-                VitaminLogger.LogInfo("Config file not found. A default config file has been created.");
-            }
-
-            // Konfiguration einlesen
-            string customPath = File.ReadAllText(configPath).Trim();
-            string[] lines = customPath.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var line in lines)
-            {
-                if (line.StartsWith("BeltMod"))
-                {
-                    string[] parts = line.Split(':');
-                    if (parts.Length == 2)
-                    {
-                        BeltSpeedMod = parts[1].Trim() == "1";
-                    }
-                }
-                if (line.StartsWith("Beltmultiplier"))
-                {
-                    string[] parts = line.Split(':');
-                    if (parts.Length == 2)
-                    {
-                        int.TryParse(parts[1].Trim(), out BeltMultiplier);
-                    }
-                }
-            }
-        }
-
     }
+
+
+
+
 }

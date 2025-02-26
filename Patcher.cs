@@ -105,7 +105,7 @@ namespace DysonSphereProgramMenuMod
         static bool Prefix(ref DroneComponent __instance, ref float droneSpeed)
         {
             
-            droneSpeed = droneSpeed * DysonSphereProgramMenu.MainMenuUI.DroneSlider;
+            droneSpeed = droneSpeed * DysonSphereProgramMenu.MiscUI.DroneSlider;
 
             return true; // Originalmethode weiterhin ausführen.
         }
@@ -120,7 +120,7 @@ namespace DysonSphereProgramMenuMod
 
         static void Prefix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MiscUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
@@ -131,7 +131,7 @@ namespace DysonSphereProgramMenuMod
 
         static void Postfix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MiscUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
@@ -146,9 +146,9 @@ namespace DysonSphereProgramMenuMod
     {
         static bool Prefix(ref EAggressiveLevel __result, CombatSettings __instance)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.passiveEnemy) return true; // Falls deaktiviert, Patch ignorieren
+            if (!DysonSphereProgramMenu.MiscUI.PassiveEnemy) return true; // Falls deaktiviert, Patch ignorieren
 
-            __result = (EAggressiveLevel)(DysonSphereProgramMenu.MainMenuUI.passiveEnemy ? 10.0f : (__instance.aggressiveness + 1f) * 10f + 0.5f);
+            __result = (EAggressiveLevel)(DysonSphereProgramMenu.MiscUI.PassiveEnemy ? 10.0f : (__instance.aggressiveness + 1f) * 10f + 0.5f);
             return false; // Originalmethode nicht ausführen, da __result überschrieben wurde
         }
     }
@@ -195,7 +195,7 @@ namespace DysonSphereProgramMenuMod
             originalbulletEnergyCost = __instance.bulletEnergyCost;
             originalbulletDamageScale = __instance.bulletDamageScale;
 
-            if (DysonSphereProgramMenu.MainMenuUI.MechaModded)
+            if (DysonSphereProgramMenu.MiscUI.MechaModded)
             {
 
 
@@ -313,7 +313,7 @@ namespace DysonSphereProgramMenuMod
     {
         static bool Prefix()
         {
-            if (DysonSphereProgramMenu.MainMenuUI.achievementToggle)
+            if (DysonSphereProgramMenu.MiscUI.PassiveEnemy)
             {
                 // Wenn aktiviert, wird der Code blockiert und das Achievement nicht gespeichert.
                 return false;
@@ -342,7 +342,7 @@ namespace DysonSphereProgramMenuMod
 
         static bool Prefix(UIReplicatorWindow __instance, int whatever, bool button_enable)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.FreeCrafting) return true; // Falls deaktiviert, Patch ignorieren.
+            if (!DysonSphereProgramMenu.MiscUI.FreeCrafting) return true; // Falls deaktiviert, Patch ignorieren.
 
             RecipeProto selectedRecipe = selectedRecipeField.GetValue(__instance) as RecipeProto;
             if (selectedRecipe == null || GameMain.isFullscreenPaused)
@@ -445,4 +445,5 @@ namespace DysonSphereProgramMenuMod
             }
         }
     }
+
 }
