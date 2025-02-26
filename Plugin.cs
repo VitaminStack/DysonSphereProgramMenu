@@ -32,12 +32,13 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.Insert))
         {
-            if (MainMenuUI.IsVisible || MiscUI.IsVisible || MovementMenuUI.IsVisible)
+            if (MainMenuUI.IsVisible || MiscUI.IsVisible || MovementMenuUI.IsVisible || MachineSettingsUI.IsVisible)
             {
                 // Alle Menüs ausblenden
                 MainMenuUI.IsVisible = false;
                 MiscUI.IsVisible = false;
                 MovementMenuUI.IsVisible = false;
+                MachineSettingsUI.IsVisible = false;
             }
             else
             {
@@ -53,8 +54,9 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         MainMenuUI.Draw();
         MiscUI.Draw();
         MovementMenuUI.Draw();
-        
-        
+        MachineSettingsUI.Draw();
+
+
     }
 
 
@@ -148,6 +150,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             // Menü-Toggles mit Highlight
             MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
             MovementMenuUI.IsVisible = GUILayout.Toggle(MovementMenuUI.IsVisible, "➡ Movement Menu", MovementMenuUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+            MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
 
             GUILayout.Space(10);
 
@@ -202,10 +205,11 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             UIHelper.InitializeStyles();
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
 
+            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
             GUILayout.Label("Drone Speed: " + DroneSlider.ToString("0.00") + "x");
             DroneSlider = GUILayout.HorizontalSlider(DroneSlider, 0.1f, 10.0f);
 
-            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
+            
             MechaModded = GUILayout.Toggle(MechaModded, "Modded Mech");
             PassiveEnemy = GUILayout.Toggle(PassiveEnemy, "Passive Enemy");
             AchievementToggle = GUILayout.Toggle(AchievementToggle, "Get Achievements?");
@@ -230,6 +234,8 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             UIHelper.InitializeStyles();
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
 
+            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
+
             GUILayout.Label("Mecha Speed: " + MechaSpeed.ToString("0.00") + "x");
             MechaSpeed = GUILayout.HorizontalSlider(MechaSpeed, 1f, 10f);
 
@@ -238,6 +244,51 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
             GUILayout.Label("Max Warp Speed: " + WarpSpeed.ToString("0.00") + "x");
             WarpSpeed = GUILayout.HorizontalSlider(WarpSpeed, 1f, 5f);
+
+            GUILayout.EndVertical();
+        }
+    }
+    public class MachineSettingsUI
+    {
+        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 250);
+        public static bool IsVisible = false;
+
+        // Dyson Sphere Einstellungen
+        public static float DysonSphereEfficiency = 1f;
+        public static float DysonSphereLaunchRate = 1f;
+
+        // Tower Einstellungen
+        public static float TowerReloadSpeed = 1f;
+        public static float TowerRange = 1f;
+
+        public static void Draw() => UIHelper.DrawUI(ref machineSettingsRect, 3, IsVisible, MachineSettingsWindow, "Machine Settings");
+
+        private static void MachineSettingsWindow(int windowID)
+        {
+            UIHelper.InitializeStyles();
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
+
+            GUILayout.BeginVertical(UIHelper.GetSectionStyle());
+
+            // 🔹 Dyson Sphere Einstellungen
+            GUILayout.Label("<b>Dyson Sphere</b>");
+            GUILayout.Label("Efficiency: " + DysonSphereEfficiency.ToString("0.00") + "x");
+            DysonSphereEfficiency = GUILayout.HorizontalSlider(DysonSphereEfficiency, 1f, 10f);
+
+            GUILayout.Label("Launch Rate: " + DysonSphereLaunchRate.ToString("0.00") + "x");
+            DysonSphereLaunchRate = GUILayout.HorizontalSlider(DysonSphereLaunchRate, 1f, 10f);
+
+            GUILayout.Space(10);
+
+            // 🔹 Tower Einstellungen
+            GUILayout.Label("<b>Towers</b>");
+            GUILayout.Label("Reload Speed: " + TowerReloadSpeed.ToString("0.00") + "x");
+            TowerReloadSpeed = GUILayout.HorizontalSlider(TowerReloadSpeed, 1f, 10f);
+
+            GUILayout.Label("Range: " + TowerRange.ToString("0.00") + "x");
+            TowerRange = GUILayout.HorizontalSlider(TowerRange, 1f, 10f);
+
+            GUILayout.EndVertical();
         }
     }
 
