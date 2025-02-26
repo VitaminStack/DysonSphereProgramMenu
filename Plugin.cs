@@ -194,7 +194,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         public static bool AchievementToggle = true;
         public static bool FastMining = false;
         public static bool FreeCrafting = false;
-        public static bool NoRequiredDirt = false;
 
         public static void Draw() => UIHelper.DrawUI(ref miscMenuRect, 1, IsVisible, MiscMenuWindow, "Misc Settings");
 
@@ -212,7 +211,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             AchievementToggle = GUILayout.Toggle(AchievementToggle, "Get Achievements?");
             FastMining = GUILayout.Toggle(FastMining, "Fast Mining");
             FreeCrafting = GUILayout.Toggle(FreeCrafting, "Free Crafting");
-            NoRequiredDirt = GUILayout.Toggle(NoRequiredDirt, "No Dirt Required");
             GUILayout.EndVertical();
         }
     }
