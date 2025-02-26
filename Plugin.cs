@@ -32,15 +32,29 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.Insert))
         {
-            isMenuVisible = !isMenuVisible;
+            if (MainMenuUI.IsVisible || MiscUI.IsVisible || MovementMenuUI.IsVisible)
+            {
+                // Alle Menüs ausblenden
+                MainMenuUI.IsVisible = false;
+                MiscUI.IsVisible = false;
+                MovementMenuUI.IsVisible = false;
+            }
+            else
+            {
+                // Nur das MainMenu wieder anzeigen (andere bleiben aus)
+                MainMenuUI.IsVisible = true;
+            }
         }
     }
 
+
     void OnGUI()
     {
-        MovementMenuUI.Draw();
         MainMenuUI.Draw();
-        MiscUI.Draw();  // Füge das neue MiscUI-Fenster hinzu
+        MiscUI.Draw();
+        MovementMenuUI.Draw();
+        
+        
     }
 
 
@@ -133,7 +147,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
             // Menü-Toggles mit Highlight
             MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
-            MovementMenu = GUILayout.Toggle(MovementMenu, "➡ Movement Menu", MovementMenu ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+            MovementMenuUI.IsVisible = GUILayout.Toggle(MovementMenuUI.IsVisible, "➡ Movement Menu", MovementMenuUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
 
             GUILayout.Space(10);
 
@@ -211,12 +225,8 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         public static float SailSpeed = 1f;
         public static float WarpSpeed = 1f;
 
-        public static void Draw()
-        {
-            IsVisible = MainMenuUI.MovementMenu;
-            UIHelper.DrawUI(ref movementMenuRect, 2, IsVisible, MovementMenuWindow, "Movement Settings");
-        }
-
+        public static void Draw() => UIHelper.DrawUI(ref movementMenuRect, 2, IsVisible, MovementMenuWindow, "Movement Settings");
+        
         private static void MovementMenuWindow(int windowID)
         {
             UIHelper.InitializeStyles();
