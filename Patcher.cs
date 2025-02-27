@@ -445,16 +445,25 @@ namespace DysonSphereProgramMenuMod
             }
         }
     }
+    //[HarmonyPatch(typeof(EjectorComponent), "InternalUpdate")]
+    //public static class EjectorComponent_InternalUpdate_Patch
+    //{
 
-    [HarmonyPatch(typeof(EjectorComponent), "InternalUpdate")]
-    public static class EjectorComponent_InternalUpdate_Patch
-    {
-        static void Prefix(ref float power, ref long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
-        {
-            if (!DysonSphereProgramMenu.MiscUI.FastMining) return; // Falls deaktiviert, keine Änderung
+    //    static void Prefix(ref int __state, ref int num3)
+    //    {
+    //        // Original-Wert speichern
+    //        __state = num3;
 
-            // Beispiel: Erhöhe die Energieproduktion für den Dyson Swarm
-            power *= 2f; // Verdopple die Leistung des Ejectors
-        }
-    }
+    //        // Schnelligkeit des Ejectors mit EjectorSpeed multiplizieren
+    //        num3 = (int)(num3 * DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
+    //    }
+
+    //    //static void Postfix(ref int __state, ref int num3)
+    //    //{
+            
+    //    //    // Originalwert nach Berechnung wiederherstellen
+    //    //    num3 = __state;
+    //    //}
+    //}
+
 }

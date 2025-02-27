@@ -150,7 +150,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             // Menü-Toggles mit Highlight
             MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
             MovementMenuUI.IsVisible = GUILayout.Toggle(MovementMenuUI.IsVisible, "➡ Movement Menu", MovementMenuUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
-            MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+            //MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
 
             GUILayout.Space(10);
 
@@ -254,8 +254,8 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         public static bool IsVisible = false;
 
         // Dyson Sphere Einstellungen
-        public static float DysonSphereEfficiency = 1f;
-        public static float DysonSphereLaunchRate = 1f;
+        public static int EjectorSpeed = 1;
+        public static int SiloSpeed = 1;
 
         // Tower Einstellungen
         public static float TowerReloadSpeed = 1f;
@@ -272,11 +272,11 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
             // 🔹 Dyson Sphere Einstellungen
             GUILayout.Label("<b>Dyson Sphere</b>");
-            GUILayout.Label("Efficiency: " + DysonSphereEfficiency.ToString("0.00") + "x");
-            DysonSphereEfficiency = GUILayout.HorizontalSlider(DysonSphereEfficiency, 1f, 10f);
+            GUILayout.Label("EjectorSpeed: " + EjectorSpeed.ToString("0.00") + "x");
+            EjectorSpeed = (int)GUILayout.HorizontalSlider(EjectorSpeed, 1f, 10f);
 
-            GUILayout.Label("Launch Rate: " + DysonSphereLaunchRate.ToString("0.00") + "x");
-            DysonSphereLaunchRate = GUILayout.HorizontalSlider(DysonSphereLaunchRate, 1f, 10f);
+            GUILayout.Label("SiloSpeed: " + SiloSpeed.ToString("0.00") + "x");
+            SiloSpeed = (int)GUILayout.HorizontalSlider(SiloSpeed, 1f, 10f);
 
             GUILayout.Space(10);
 
