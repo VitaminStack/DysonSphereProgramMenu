@@ -150,7 +150,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             // Menü-Toggles mit Highlight
             MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
             MovementMenuUI.IsVisible = GUILayout.Toggle(MovementMenuUI.IsVisible, "➡ Movement Menu", MovementMenuUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
-            //MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
+            MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
 
             GUILayout.Space(10);
 
