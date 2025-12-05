@@ -1,11 +1,9 @@
-﻿using ABN;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using Steamworks;
 using static DysonSphereProgramMenu;
 
 
@@ -22,17 +20,13 @@ namespace DysonSphereProgramMenuMod
 
             try
             {
-                // Patch für EjectorComponent.InternalUpdate (Prefix)
                 MethodInfo ejectorMethod = AccessTools.Method(typeof(EjectorComponent), "InternalUpdate", new Type[] { typeof(float), typeof(long), typeof(DysonSwarm), typeof(AstroData[]), typeof(AnimData[]), typeof(int[]) });
                 MethodInfo ejectorPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorPrefix));
-                MethodInfo ejectorPostfix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorPostfix));
-                harmony.Patch(ejectorMethod, prefix: new HarmonyMethod(ejectorPrefix), postfix: new HarmonyMethod(ejectorPostfix));
+                harmony.Patch(ejectorMethod, prefix: new HarmonyMethod(ejectorPrefix));
 
-                // Patch für SiloComponent.InternalUpdate (Prefix)
                 MethodInfo rocketMethod = AccessTools.Method(typeof(SiloComponent), "InternalUpdate", new Type[] { typeof(float), typeof(DysonSphere), typeof(AnimData[]), typeof(int[]) });
                 MethodInfo rocketPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketPrefix));
-                MethodInfo rocketPostfix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketPostfix));
-                harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix), postfix: new HarmonyMethod(rocketPostfix));
+                harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
 
@@ -45,26 +39,16 @@ namespace DysonSphereProgramMenuMod
     }
     public static class Patches
     {
-        static bool DebugMode = true;
-
         public static void EjectorPrefix(ref float power)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
             power *= multiplier;
         }
 
-        public static void EjectorPostfix()
-        {
-        }
-
         public static void RocketPrefix(ref float power)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.SiloSpeed);
             power *= multiplier;
-        }
-
-        public static void RocketPostfix()
-        {
         }
     }
     public static class DroneComponent_InternalUpdate_Patch
@@ -99,10 +83,8 @@ namespace DysonSphereProgramMenuMod
 
         static bool Prefix(ref DroneComponent __instance, ref float droneSpeed)
         {
-            
-            droneSpeed = droneSpeed * DysonSphereProgramMenu.MiscUI.DroneSlider;
-
-            return true; // Originalmethode weiterhin ausführen.
+            droneSpeed *= DysonSphereProgramMenu.MiscUI.DroneSlider;
+            return true;
         }
         
     }
@@ -115,18 +97,18 @@ namespace DysonSphereProgramMenuMod
 
         static void Prefix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.MiscUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MiscUI.FastMining) return;
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
                 originalMiningSpeed = __instance.player.mecha.miningSpeed;
-                __instance.player.mecha.miningSpeed *= 30f; // Geschwindigkeit x30
+                __instance.player.mecha.miningSpeed *= 30f;
             }
         }
 
         static void Postfix(PlayerAction_Mine __instance)
         {
-            if (!DysonSphereProgramMenu.MiscUI.FastMining) return; // Falls FastMining deaktiviert ist, keine Änderung
+            if (!DysonSphereProgramMenu.MiscUI.FastMining) return;
 
             if (__instance.player != null && __instance.player.mecha != null)
             {
@@ -141,20 +123,20 @@ namespace DysonSphereProgramMenuMod
     {
         static bool Prefix(ref EAggressiveLevel __result, CombatSettings __instance)
         {
-            if (!DysonSphereProgramMenu.MiscUI.PassiveEnemy) return true; // Falls deaktiviert, Patch ignorieren
+            if (!DysonSphereProgramMenu.MiscUI.PassiveEnemy) return true;
 
             __result = (EAggressiveLevel)(DysonSphereProgramMenu.MiscUI.PassiveEnemy ? 10.0f : (__instance.aggressiveness + 1f) * 10f + 0.5f);
-            return false; // Originalmethode nicht ausführen, da __result überschrieben wurde
+            return false;
         }
     }
 
 
-    [HarmonyPatch(typeof(PrefabDesc), "ReadPrefab")]//BeltModifer
+    [HarmonyPatch(typeof(PrefabDesc), "ReadPrefab")]
     public static class PrefabDesc_ReadPrefab_Patch
     {
         static void Postfix(ref PrefabDesc __instance, GameObject _prefab, GameObject _colliderPrefab)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod) return; // Falls deaktiviert, Patch ignorieren
+            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod) return;
 
             BeltDesc belt = __instance.prefab.GetComponentInChildren<BeltDesc>(true);
             if (belt != null)
@@ -440,25 +422,4 @@ namespace DysonSphereProgramMenuMod
             }
         }
     }
-    //[HarmonyPatch(typeof(EjectorComponent), "InternalUpdate")]
-    //public static class EjectorComponent_InternalUpdate_Patch
-    //{
-
-    //    static void Prefix(ref int __state, ref int num3)
-    //    {
-    //        // Original-Wert speichern
-    //        __state = num3;
-
-    //        // Schnelligkeit des Ejectors mit EjectorSpeed multiplizieren
-    //        num3 = (int)(num3 * DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
-    //    }
-
-    //    //static void Postfix(ref int __state, ref int num3)
-    //    //{
-            
-    //    //    // Originalwert nach Berechnung wiederherstellen
-    //    //    num3 = __state;
-    //    //}
-    //}
-
 }

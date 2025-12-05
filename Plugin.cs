@@ -1,18 +1,12 @@
 ﻿using BepInEx;
 using UnityEngine;
 using System.IO;
-using Steamworks;
 
 [BepInPlugin("com.example.myplugin", "DysonSphereProgramMenu", "2.0.0")]
 public class DysonSphereProgramMenu : BaseUnityPlugin
 {
-    // Plugin-Metadaten
-    private string PluginName = "DysonSphereProgramMenu";
-    private string PluginVersion = "2.0.0";
+    private const string PluginName = "DysonSphereProgramMenu";
     public static bool DebugMode = true;
-
-    // Sichtbarkeit des Menüs
-    private static bool isMenuVisible;
 
 
     void Awake()
@@ -24,27 +18,17 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     void Start()
     {
         VitaminLogger.LogInfo($"{PluginName} wurde gestartet!");
-        MainMenuUI.LoadConfig();
-        isMenuVisible = true;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Insert))
         {
-            if (MainMenuUI.IsVisible || MiscUI.IsVisible || MovementMenuUI.IsVisible || MachineSettingsUI.IsVisible)
-            {
-                // Alle Menüs ausblenden
-                MainMenuUI.IsVisible = false;
-                MiscUI.IsVisible = false;
-                MovementMenuUI.IsVisible = false;
-                MachineSettingsUI.IsVisible = false;
-            }
-            else
-            {
-                // Nur das MainMenu wieder anzeigen (andere bleiben aus)
-                MainMenuUI.IsVisible = true;
-            }
+            bool anyMenuVisible = MainMenuUI.IsVisible || MiscUI.IsVisible || MovementMenuUI.IsVisible || MachineSettingsUI.IsVisible;
+            MainMenuUI.IsVisible = !anyMenuVisible;
+            MiscUI.IsVisible = false;
+            MovementMenuUI.IsVisible = false;
+            MachineSettingsUI.IsVisible = false;
         }
     }
 
@@ -55,8 +39,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         MiscUI.Draw();
         MovementMenuUI.Draw();
         MachineSettingsUI.Draw();
-
-
     }
 
 
@@ -121,10 +103,8 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     {
         private static Rect mainMenuRect = new Rect(Screen.width - 250, 50, 200, 250);
         public static bool IsVisible = true;
-        public static bool MovementMenu = false;
         public static bool UnlockAll = false;
 
-        // Nicht sichtbare Werte (Konfiguration)
         public static bool BeltSpeedMod = false;
         public static int BeltMultiplier = 1;
         private static bool configLoaded = false;
@@ -146,8 +126,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
 
             GUILayout.BeginVertical(UIHelper.GetSectionStyle());
-
-            // Menü-Toggles mit Highlight
             MiscUI.IsVisible = GUILayout.Toggle(MiscUI.IsVisible, "➡ Misc Settings", MiscUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
             MovementMenuUI.IsVisible = GUILayout.Toggle(MovementMenuUI.IsVisible, "➡ Movement Menu", MovementMenuUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
             MachineSettingsUI.IsVisible = GUILayout.Toggle(MachineSettingsUI.IsVisible, "➡ Machine Settings", MachineSettingsUI.IsVisible ? UIHelper.GetHighlightedToggle() : UIHelper.GetDefaultToggle());
