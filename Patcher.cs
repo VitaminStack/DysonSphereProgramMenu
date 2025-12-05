@@ -120,8 +120,16 @@ namespace DysonSphereProgramMenuMod
         private static bool ApplyBeltMultiplier(CargoPath __instance, ref int[] __state)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
-            int chunkCount = ChunkCountRef(__instance);
-            if (multiplier == 1 || __instance.chunks == null || chunkCount == 0)
+            int reportedChunkCount = ChunkCountRef(__instance);
+            if (multiplier == 1 || __instance.chunks == null || reportedChunkCount <= 0)
+            {
+                __state = null;
+                return true;
+            }
+
+            int maxChunksByArray = __instance.chunks.Length / 3;
+            int chunkCount = Math.Min(reportedChunkCount, maxChunksByArray);
+            if (chunkCount <= 0)
             {
                 __state = null;
                 return true;
@@ -153,7 +161,8 @@ namespace DysonSphereProgramMenuMod
                 return;
             }
 
-            int chunkCount = Math.Min(__state.Length, ChunkCountRef(__instance));
+            int maxChunksByArray = __instance.chunks.Length / 3;
+            int chunkCount = Math.Min(Math.Min(__state.Length, ChunkCountRef(__instance)), maxChunksByArray);
             for (int i = 0; i < chunkCount; i++)
             {
                 int speedIndex = i * 3 + 2;
