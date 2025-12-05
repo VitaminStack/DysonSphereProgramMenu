@@ -33,18 +33,6 @@ namespace DysonSphereProgramMenuMod
                 MethodInfo rocketPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketPrefix));
                 MethodInfo rocketPostfix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketPostfix));
                 harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix), postfix: new HarmonyMethod(rocketPostfix));
-
-                // Patch für EjectorComponent.Export (Prefix)
-                MethodInfo ejectorExportMethod = AccessTools.Method(typeof(EjectorComponent), "Export", new Type[] { typeof(BinaryWriter) });
-                MethodInfo ejectorExportPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorExportPrefix));
-                MethodInfo ejectorExportPostfix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorExportPostfix));
-                harmony.Patch(ejectorExportMethod, prefix: new HarmonyMethod(ejectorExportPrefix), postfix: new HarmonyMethod(ejectorExportPostfix));
-
-                // Patch für SiloComponent.Export (Prefix)
-                MethodInfo rocketExportMethod = AccessTools.Method(typeof(SiloComponent), "Export", new Type[] { typeof(BinaryWriter) });
-                MethodInfo rocketExportPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketExportPrefix));
-                MethodInfo rocketExportPostfix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketExportPostfix));
-                harmony.Patch(rocketExportMethod, prefix: new HarmonyMethod(rocketExportPrefix), postfix: new HarmonyMethod(rocketExportPostfix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
 
@@ -59,91 +47,24 @@ namespace DysonSphereProgramMenuMod
     {
         static bool DebugMode = true;
 
-        private static readonly Dictionary<int, int> EjectorOriginalTimes = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> EjectorUnmodifiedTimes = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> SiloOriginalTimes = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> SiloUnmodifiedTimes = new Dictionary<int, int>();
-
-        public static void EjectorPrefix(ref EjectorComponent __instance, ref float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
-        {
-            EjectorOriginalTimes[__instance.id] = __instance.time;
-        }
-
-        public static void EjectorPostfix(ref EjectorComponent __instance, ref float power)
+        public static void EjectorPrefix(ref float power)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
-            int originalTime = EjectorOriginalTimes.TryGetValue(__instance.id, out int cachedTime) ? cachedTime : __instance.time;
-            int unmodifiedTime = __instance.time;
-
-            EjectorUnmodifiedTimes[__instance.id] = unmodifiedTime;
-
-            if (multiplier <= 1)
-            {
-                return;
-            }
-
-            int delta = unmodifiedTime - originalTime;
-            if (delta > 0)
-            {
-                __instance.time = originalTime + delta * multiplier;
-            }
+            power *= multiplier;
         }
 
-        public static void RocketPrefix(ref SiloComponent __instance, ref float power, DysonSphere sphere, AnimData[] animPool, int[] consumeRegister)
+        public static void EjectorPostfix()
         {
-            SiloOriginalTimes[__instance.id] = __instance.time;
         }
 
-        public static void RocketPostfix(ref SiloComponent __instance, ref float power)
+        public static void RocketPrefix(ref float power)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.SiloSpeed);
-            int originalTime = SiloOriginalTimes.TryGetValue(__instance.id, out int cachedTime) ? cachedTime : __instance.time;
-            int unmodifiedTime = __instance.time;
-
-            SiloUnmodifiedTimes[__instance.id] = unmodifiedTime;
-
-            if (multiplier <= 1)
-            {
-                return;
-            }
-
-            int delta = unmodifiedTime - originalTime;
-            if (delta > 0)
-            {
-                __instance.time = originalTime + delta * multiplier;
-            }
+            power *= multiplier;
         }
 
-        public static bool EjectorExportPrefix(ref EjectorComponent __instance, ref int __state)
+        public static void RocketPostfix()
         {
-            __state = __instance.time;
-            if (EjectorUnmodifiedTimes.TryGetValue(__instance.id, out int cachedTime))
-            {
-                __instance.time = cachedTime;
-            }
-
-            return true;
-        }
-
-        public static void EjectorExportPostfix(ref EjectorComponent __instance, int __state)
-        {
-            __instance.time = __state;
-        }
-
-        public static bool RocketExportPrefix(ref SiloComponent __instance, ref int __state)
-        {
-            __state = __instance.time;
-            if (SiloUnmodifiedTimes.TryGetValue(__instance.id, out int cachedTime))
-            {
-                __instance.time = cachedTime;
-            }
-
-            return true;
-        }
-
-        public static void RocketExportPostfix(ref SiloComponent __instance, int __state)
-        {
-            __instance.time = __state;
         }
     }
     public static class DroneComponent_InternalUpdate_Patch
