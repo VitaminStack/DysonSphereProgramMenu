@@ -237,7 +237,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         // Tower Einstellungen
         public static float TowerReloadSpeed = 1f;
-        public static float TowerRange = 1f;
 
         public static void Draw() => UIHelper.DrawUI(ref machineSettingsRect, 3, IsVisible, MachineSettingsWindow, "Machine Settings");
 
@@ -262,9 +261,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUILayout.Label("<b>Towers</b>");
             GUILayout.Label("Reload Speed: " + TowerReloadSpeed.ToString("0.00") + "x");
             TowerReloadSpeed = GUILayout.HorizontalSlider(TowerReloadSpeed, 1f, 10f);
-
-            GUILayout.Label("Range: " + TowerRange.ToString("0.00") + "x");
-            TowerRange = GUILayout.HorizontalSlider(TowerRange, 1f, 10f);
 
             GUILayout.EndVertical();
         }
