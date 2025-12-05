@@ -29,7 +29,7 @@ namespace DysonSphereProgramMenuMod
                 harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 TurretComponent_Patches.ApplyPatch(harmony);
-                CargoTraffic_BeltSpeed_Patch.ApplyPatch(harmony);
+                CargoPath_BeltSpeedMultiplier_Patch.ApplyPatch(harmony);
                 AssemblerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 MinerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
@@ -105,46 +105,52 @@ namespace DysonSphereProgramMenuMod
             power *= multiplier;
         }
     }
-    public static class CargoTraffic_BeltSpeed_Patch
+    public static class CargoPath_BeltSpeedMultiplier_Patch
     {
         public static void ApplyPatch(Harmony harmony)
         {
-            harmony.Patch(
-                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.NewBeltComponent), new Type[] { typeof(int), typeof(int) }),
-                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
-            );
-
-            harmony.Patch(
-                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.UpgradeBeltComponent), new Type[] { typeof(int), typeof(int) }),
-                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
-            );
-
-            harmony.Patch(
-                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.SetBeltState), new Type[] { typeof(int), typeof(int) }),
-                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltState))
-            );
+            MethodInfo targetMethod = AccessTools.Method(typeof(CargoPath), nameof(CargoPath.Update));
+            harmony.Patch(targetMethod,
+                prefix: new HarmonyMethod(typeof(CargoPath_BeltSpeedMultiplier_Patch), nameof(ApplyBeltMultiplier)),
+                postfix: new HarmonyMethod(typeof(CargoPath_BeltSpeedMultiplier_Patch), nameof(RestoreBeltSpeeds)));
         }
 
-        private static void ScaleBeltSpeed(ref int speed)
+        private static bool ApplyBeltMultiplier(CargoPath __instance, ref int[] __state)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod)
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
+            if (multiplier == 1 || __instance.chunks == null || __instance.chunkCount == 0)
+            {
+                __state = null;
+                return true;
+            }
+
+            int chunkCount = __instance.chunkCount;
+            __state = new int[chunkCount];
+
+            for (int i = 0; i < chunkCount; i++)
+            {
+                int speedIndex = i * 3 + 2;
+                int originalSpeed = __instance.chunks[speedIndex];
+                __state[i] = originalSpeed;
+                __instance.chunks[speedIndex] = Math.Max(1, originalSpeed * multiplier);
+            }
+
+            return true;
+        }
+
+        private static void RestoreBeltSpeeds(CargoPath __instance, int[] __state)
+        {
+            if (__state == null || __instance.chunks == null)
             {
                 return;
             }
 
-            int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
-            speed = Math.Max(1, speed * multiplier);
-        }
-
-        private static void ScaleBeltState(ref int state)
-        {
-            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod)
+            int chunkCount = Math.Min(__state.Length, __instance.chunkCount);
+            for (int i = 0; i < chunkCount; i++)
             {
-                return;
+                int speedIndex = i * 3 + 2;
+                __instance.chunks[speedIndex] = __state[i];
             }
-
-            int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
-            state = Math.Max(1, state * multiplier);
         }
     }
     public static class DroneComponent_InternalUpdate_Patch
@@ -232,12 +238,10 @@ namespace DysonSphereProgramMenuMod
     {
         static void Postfix(ref PrefabDesc __instance, GameObject _prefab, GameObject _colliderPrefab)
         {
-            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod) return;
-
             BeltDesc belt = __instance.prefab.GetComponentInChildren<BeltDesc>(true);
             if (belt != null)
             {
-                __instance.beltSpeed = belt.speed * DysonSphereProgramMenu.MainMenuUI.BeltMultiplier;
+                __instance.beltSpeed = belt.speed;
             }
         }
         // Wird beim Laden des Patches ausgeführt, um zu prüfen, ob der Patch erfolgreich war.

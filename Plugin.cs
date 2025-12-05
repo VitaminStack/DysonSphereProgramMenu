@@ -103,7 +103,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         public static bool IsVisible = true;
         public static bool UnlockAll = false;
 
-        public static bool BeltSpeedMod = false;
         public static int BeltMultiplier = 1;
 
         public static void Draw()
@@ -238,7 +237,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUILayout.Space(10);
 
             GUILayout.Label("<b>Belts</b>");
-            MainMenuUI.BeltSpeedMod = GUILayout.Toggle(MainMenuUI.BeltSpeedMod, "Enable Belt Speed Mod");
             GUILayout.Label("Belt Speed: " + MainMenuUI.BeltMultiplier.ToString("0.00") + "x");
             MainMenuUI.BeltMultiplier = (int)GUILayout.HorizontalSlider(MainMenuUI.BeltMultiplier, 1f, 20f);
 
