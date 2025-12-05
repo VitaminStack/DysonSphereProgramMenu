@@ -25,18 +25,22 @@ namespace DysonSphereProgramMenuMod
                 // Patch für EjectorComponent.InternalUpdate (Prefix)
                 MethodInfo ejectorMethod = AccessTools.Method(typeof(EjectorComponent), "InternalUpdate", new Type[] { typeof(float), typeof(long), typeof(DysonSwarm), typeof(AstroData[]), typeof(AnimData[]), typeof(int[]) });
                 MethodInfo ejectorPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorPrefix));
+                harmony.Patch(ejectorMethod, prefix: new HarmonyMethod(ejectorPrefix));
 
                 // Patch für SiloComponent.InternalUpdate (Prefix)
                 MethodInfo rocketMethod = AccessTools.Method(typeof(SiloComponent), "InternalUpdate", new Type[] { typeof(float), typeof(DysonSphere), typeof(AnimData[]), typeof(int[]) });
                 MethodInfo rocketPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketPrefix));
+                harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix));
 
                 // Patch für EjectorComponent.Export (Prefix)
                 MethodInfo ejectorExportMethod = AccessTools.Method(typeof(EjectorComponent), "Export", new Type[] { typeof(BinaryWriter) });
                 MethodInfo ejectorExportPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.EjectorExportPrefix));
+                harmony.Patch(ejectorExportMethod, prefix: new HarmonyMethod(ejectorExportPrefix));
 
                 // Patch für SiloComponent.Export (Prefix)
                 MethodInfo rocketExportMethod = AccessTools.Method(typeof(SiloComponent), "Export", new Type[] { typeof(BinaryWriter) });
                 MethodInfo rocketExportPrefix = typeof(DysonSphereProgramMenuMod.Patches).GetMethod(nameof(DysonSphereProgramMenuMod.Patches.RocketExportPrefix));
+                harmony.Patch(rocketExportMethod, prefix: new HarmonyMethod(rocketExportPrefix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
 
@@ -51,25 +55,89 @@ namespace DysonSphereProgramMenuMod
     {
         static bool DebugMode = true;
 
-        public static bool EjectorPrefix(ref EjectorComponent __instance, float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
+        public static bool EjectorPrefix(ref EjectorComponent __instance, ref float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
         {
-            
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
+            power *= multiplier;
             return true;
         }
-        public static bool RocketPrefix(ref SiloComponent __instance, float power, DysonSphere sphere, AnimData[] animPool, int[] consumeRegister)
+        public static bool RocketPrefix(ref SiloComponent __instance, ref float power, DysonSphere sphere, AnimData[] animPool, int[] consumeRegister)
         {
-            
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.SiloSpeed);
+            power *= multiplier;
             return true;
         }
-        public static bool EjectorExportPrefix(ref EjectorComponent __instance, ref BinaryWriter w)
+        public static bool EjectorExportPrefix(ref EjectorComponent __instance, BinaryWriter w)
         {
-            
-            return true;
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.EjectorSpeed);
+            int exportTime = __instance.time / multiplier;
+
+            w.Write(4);
+            w.Write(__instance.id);
+            w.Write(__instance.entityId);
+            w.Write(__instance.planetId);
+            w.Write(__instance.pcId);
+            w.Write(__instance.direction);
+            w.Write(exportTime);
+            w.Write(__instance.fired);
+            w.Write(__instance.chargeSpend);
+            w.Write(__instance.coldSpend);
+            w.Write(__instance.bulletId);
+            w.Write(__instance.bulletCount);
+            w.Write(__instance.bulletInc);
+            w.Write(__instance.orbitId);
+            w.Write(__instance.findingOrbitId);
+            w.Write(__instance.runtimeOrbitId);
+            w.Write(__instance.pivotY);
+            w.Write(__instance.muzzleY);
+            w.Write(__instance.boost);
+            w.Write(__instance.incUsed);
+            w.Write(__instance.autoOrbit);
+            w.Write(__instance.localPosN.x);
+            w.Write(__instance.localPosN.y);
+            w.Write(__instance.localPosN.z);
+            w.Write(__instance.localAlt);
+            w.Write(__instance.localRot.x);
+            w.Write(__instance.localRot.y);
+            w.Write(__instance.localRot.z);
+            w.Write(__instance.localRot.w);
+            w.Write(__instance.localDir.x);
+            w.Write(__instance.localDir.y);
+            w.Write(__instance.localDir.z);
+
+            return false;
         }
-        public static bool RocketExportPrefix(ref SiloComponent __instance, ref BinaryWriter w)
+        public static bool RocketExportPrefix(ref SiloComponent __instance, BinaryWriter w)
         {
-            
-            return true;
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.SiloSpeed);
+            int exportTime = __instance.time / multiplier;
+
+            w.Write(3);
+            w.Write(__instance.id);
+            w.Write(__instance.entityId);
+            w.Write(__instance.planetId);
+            w.Write(__instance.pcId);
+            w.Write(__instance.direction);
+            w.Write(exportTime);
+            w.Write(__instance.fired);
+            w.Write(__instance.chargeSpend);
+            w.Write(__instance.coldSpend);
+            w.Write(__instance.bulletId);
+            w.Write(__instance.bulletCount);
+            w.Write(__instance.bulletInc);
+            w.Write(__instance.autoIndex);
+            w.Write(__instance.hasNode);
+            w.Write(__instance.boost);
+            w.Write(__instance.incUsed);
+            w.Write(__instance.localPos.x);
+            w.Write(__instance.localPos.y);
+            w.Write(__instance.localPos.z);
+            w.Write(__instance.localRot.x);
+            w.Write(__instance.localRot.y);
+            w.Write(__instance.localRot.z);
+            w.Write(__instance.localRot.w);
+
+            return false;
         }
     }
     public static class DroneComponent_InternalUpdate_Patch
