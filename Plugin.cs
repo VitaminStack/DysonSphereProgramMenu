@@ -273,10 +273,10 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             // 🔹 Dyson Sphere Einstellungen
             GUILayout.Label("<b>Dyson Sphere</b>");
             GUILayout.Label("EjectorSpeed: " + EjectorSpeed.ToString("0.00") + "x");
-            EjectorSpeed = (int)GUILayout.HorizontalSlider(EjectorSpeed, 1f, 10f);
+            EjectorSpeed = (int)GUILayout.HorizontalSlider(EjectorSpeed, 1f, 25f);
 
             GUILayout.Label("SiloSpeed: " + SiloSpeed.ToString("0.00") + "x");
-            SiloSpeed = (int)GUILayout.HorizontalSlider(SiloSpeed, 1f, 10f);
+            SiloSpeed = (int)GUILayout.HorizontalSlider(SiloSpeed, 1f, 25f);
 
             GUILayout.Space(10);
 
