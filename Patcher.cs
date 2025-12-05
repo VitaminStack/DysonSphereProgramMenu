@@ -30,6 +30,7 @@ namespace DysonSphereProgramMenuMod
                 harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 TurretComponent_Patches.ApplyPatch(harmony);
+                CargoTraffic_BeltSpeed_Patch.ApplyPatch(harmony);
                 AssemblerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 MinerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
@@ -103,6 +104,37 @@ namespace DysonSphereProgramMenuMod
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MachineSettingsUI.SiloSpeed);
             power *= multiplier;
+        }
+    }
+    public static class CargoTraffic_BeltSpeed_Patch
+    {
+        public static void ApplyPatch(Harmony harmony)
+        {
+            harmony.Patch(
+                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.NewBeltComponent), new Type[] { typeof(int), typeof(int) }),
+                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
+            );
+
+            harmony.Patch(
+                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.UpgradeBeltComponent), new Type[] { typeof(int), typeof(int) }),
+                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
+            );
+
+            harmony.Patch(
+                AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.SetBeltState), new Type[] { typeof(int), typeof(int) }),
+                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
+            );
+        }
+
+        private static void ScaleBeltSpeed(ref int state)
+        {
+            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod)
+            {
+                return;
+            }
+
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
+            state = Math.Max(1, state * multiplier);
         }
     }
     public static class DroneComponent_InternalUpdate_Patch

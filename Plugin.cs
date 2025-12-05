@@ -228,7 +228,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     }
     public class MachineSettingsUI
     {
-        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 360);
+        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 440);
         public static bool IsVisible = false;
 
         // Dyson Sphere Einstellungen
@@ -266,6 +266,13 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUILayout.Label("<b>Towers</b>");
             GUILayout.Label("Reload Speed: " + TowerReloadSpeed.ToString("0.00") + "x");
             TowerReloadSpeed = GUILayout.HorizontalSlider(TowerReloadSpeed, 1f, 10f);
+
+            GUILayout.Space(10);
+
+            GUILayout.Label("<b>Belts</b>");
+            MainMenuUI.BeltSpeedMod = GUILayout.Toggle(MainMenuUI.BeltSpeedMod, "Enable Belt Speed Mod");
+            GUILayout.Label("Belt Speed: " + MainMenuUI.BeltMultiplier.ToString("0.00") + "x");
+            MainMenuUI.BeltMultiplier = (int)GUILayout.HorizontalSlider(MainMenuUI.BeltMultiplier, 1f, 20f);
 
             GUILayout.Space(10);
 
