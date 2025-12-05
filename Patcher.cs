@@ -127,11 +127,20 @@ namespace DysonSphereProgramMenuMod
                 return true;
             }
 
+            int chunkStride = Math.Max(1, __instance.chunks.Length / chunkCount);
+            int speedOffset = Math.Max(0, chunkStride - 1);
+
             __state = new int[chunkCount];
 
             for (int i = 0; i < chunkCount; i++)
             {
-                int speedIndex = i * 3 + 2;
+                int speedIndex = i * chunkStride + speedOffset;
+                if (speedIndex < 0 || speedIndex >= __instance.chunks.Length)
+                {
+                    __state = null;
+                    return true;
+                }
+
                 int originalSpeed = __instance.chunks[speedIndex];
                 __state[i] = originalSpeed;
                 __instance.chunks[speedIndex] = Math.Max(1, originalSpeed * multiplier);
@@ -148,9 +157,16 @@ namespace DysonSphereProgramMenuMod
             }
 
             int chunkCount = Math.Min(__state.Length, ChunkCountRef(__instance));
+            int chunkStride = Math.Max(1, __instance.chunks.Length / Math.Max(1, chunkCount));
+            int speedOffset = Math.Max(0, chunkStride - 1);
             for (int i = 0; i < chunkCount; i++)
             {
-                int speedIndex = i * 3 + 2;
+                int speedIndex = i * chunkStride + speedOffset;
+                if (speedIndex < 0 || speedIndex >= __instance.chunks.Length)
+                {
+                    break;
+                }
+
                 __instance.chunks[speedIndex] = __state[i];
             }
         }
