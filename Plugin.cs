@@ -271,13 +271,13 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
             GUILayout.Label("<b>Production</b>");
             GUILayout.Label("Smelter Speed: " + SmelterSpeed.ToString("0.00") + "x");
-            SmelterSpeed = GUILayout.HorizontalSlider(SmelterSpeed, 0.1f, 10f);
+            SmelterSpeed = GUILayout.HorizontalSlider(SmelterSpeed, 1f, 25f);
 
             GUILayout.Label("Assembler Speed: " + AssemblerSpeed.ToString("0.00") + "x");
-            AssemblerSpeed = GUILayout.HorizontalSlider(AssemblerSpeed, 0.1f, 10f);
+            AssemblerSpeed = GUILayout.HorizontalSlider(AssemblerSpeed, 1f, 25f);
 
             GUILayout.Label("Mining Speed: " + MinerSpeed.ToString("0.00") + "x");
-            MinerSpeed = GUILayout.HorizontalSlider(MinerSpeed, 0.1f, 10f);
+            MinerSpeed = GUILayout.HorizontalSlider(MinerSpeed, 1f, 25f);
 
             GUILayout.EndVertical();
         }

@@ -54,11 +54,11 @@ namespace DysonSphereProgramMenuMod
             float multiplier = 1f;
             if (__instance.recipeType == ERecipeType.Smelt)
             {
-                multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.SmelterSpeed);
+                multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.SmelterSpeed);
             }
             else if (__instance.recipeType == ERecipeType.Assemble)
             {
-                multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.AssemblerSpeed);
+                multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.AssemblerSpeed);
             }
 
             power *= multiplier;
@@ -74,7 +74,7 @@ namespace DysonSphereProgramMenuMod
 
         private static void ScaleMiningSpeed(ref float miningSpeed)
         {
-            miningSpeed *= Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.MinerSpeed);
+            miningSpeed *= Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.MinerSpeed);
         }
     }
     public static class TurretComponent_Patches
