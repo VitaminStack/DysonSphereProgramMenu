@@ -59,10 +59,10 @@ namespace DysonSphereProgramMenuMod
     {
         static bool DebugMode = true;
 
-        private static readonly Dictionary<int, int> EjectorOriginalTimes = new();
-        private static readonly Dictionary<int, int> EjectorUnmodifiedTimes = new();
-        private static readonly Dictionary<int, int> SiloOriginalTimes = new();
-        private static readonly Dictionary<int, int> SiloUnmodifiedTimes = new();
+        private static readonly Dictionary<int, int> EjectorOriginalTimes = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> EjectorUnmodifiedTimes = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> SiloOriginalTimes = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> SiloUnmodifiedTimes = new Dictionary<int, int>();
 
         public static void EjectorPrefix(ref EjectorComponent __instance, ref float power, long tick, DysonSwarm swarm, AstroData[] astroPoses, AnimData[] animPool, int[] consumeRegister)
         {
