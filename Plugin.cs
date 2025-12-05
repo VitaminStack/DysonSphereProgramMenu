@@ -228,7 +228,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     }
     public class MachineSettingsUI
     {
-        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 250);
+        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 360);
         public static bool IsVisible = false;
 
         // Dyson Sphere Einstellungen
@@ -237,6 +237,11 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         // Tower Einstellungen
         public static float TowerReloadSpeed = 1f;
+
+        // Produktion Einstellungen
+        public static float SmelterSpeed = 1f;
+        public static float AssemblerSpeed = 1f;
+        public static float MinerSpeed = 1f;
 
         public static void Draw() => UIHelper.DrawUI(ref machineSettingsRect, 3, IsVisible, MachineSettingsWindow, "Machine Settings");
 
@@ -261,6 +266,18 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUILayout.Label("<b>Towers</b>");
             GUILayout.Label("Reload Speed: " + TowerReloadSpeed.ToString("0.00") + "x");
             TowerReloadSpeed = GUILayout.HorizontalSlider(TowerReloadSpeed, 1f, 10f);
+
+            GUILayout.Space(10);
+
+            GUILayout.Label("<b>Production</b>");
+            GUILayout.Label("Smelter Speed: " + SmelterSpeed.ToString("0.00") + "x");
+            SmelterSpeed = GUILayout.HorizontalSlider(SmelterSpeed, 0.1f, 10f);
+
+            GUILayout.Label("Assembler Speed: " + AssemblerSpeed.ToString("0.00") + "x");
+            AssemblerSpeed = GUILayout.HorizontalSlider(AssemblerSpeed, 0.1f, 10f);
+
+            GUILayout.Label("Mining Speed: " + MinerSpeed.ToString("0.00") + "x");
+            MinerSpeed = GUILayout.HorizontalSlider(MinerSpeed, 0.1f, 10f);
 
             GUILayout.EndVertical();
         }

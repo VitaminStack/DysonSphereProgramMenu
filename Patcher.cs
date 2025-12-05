@@ -30,6 +30,8 @@ namespace DysonSphereProgramMenuMod
                 harmony.Patch(rocketMethod, prefix: new HarmonyMethod(rocketPrefix));
                 DroneComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 TurretComponent_Patches.ApplyPatch(harmony);
+                AssemblerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
+                MinerComponent_InternalUpdate_Patch.ApplyPatch(harmony);
                 harmony.PatchAll();
 
             }
@@ -37,6 +39,42 @@ namespace DysonSphereProgramMenuMod
             {
                 Debug.LogError("Fehler beim Anwenden der Patches: " + ex.Message);
             }
+        }
+    }
+    public static class AssemblerComponent_InternalUpdate_Patch
+    {
+        public static void ApplyPatch(Harmony harmony)
+        {
+            MethodInfo targetMethod = AccessTools.Method(typeof(AssemblerComponent), nameof(AssemblerComponent.InternalUpdate), new Type[] { typeof(float), typeof(int[]), typeof(int[]) });
+            harmony.Patch(targetMethod, prefix: new HarmonyMethod(typeof(AssemblerComponent_InternalUpdate_Patch), nameof(ScaleManufacturingSpeed)));
+        }
+
+        private static void ScaleManufacturingSpeed(ref AssemblerComponent __instance, ref float power)
+        {
+            float multiplier = 1f;
+            if (__instance.recipeType == ERecipeType.Smelt)
+            {
+                multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.SmelterSpeed);
+            }
+            else if (__instance.recipeType == ERecipeType.Assemble)
+            {
+                multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.AssemblerSpeed);
+            }
+
+            power *= multiplier;
+        }
+    }
+    public static class MinerComponent_InternalUpdate_Patch
+    {
+        public static void ApplyPatch(Harmony harmony)
+        {
+            MethodInfo targetMethod = AccessTools.Method(typeof(MinerComponent), nameof(MinerComponent.InternalUpdate), new Type[] { typeof(PlanetFactory), typeof(VeinData[]), typeof(float), typeof(float), typeof(float), typeof(int[]) });
+            harmony.Patch(targetMethod, prefix: new HarmonyMethod(typeof(MinerComponent_InternalUpdate_Patch), nameof(ScaleMiningSpeed)));
+        }
+
+        private static void ScaleMiningSpeed(ref float miningSpeed)
+        {
+            miningSpeed *= Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.MinerSpeed);
         }
     }
     public static class TurretComponent_Patches
