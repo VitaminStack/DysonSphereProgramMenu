@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using UnityEngine;
-using System.IO;
 
 [BepInPlugin("com.example.myplugin", "DysonSphereProgramMenu", "2.0.0")]
 public class DysonSphereProgramMenu : BaseUnityPlugin
@@ -11,7 +10,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
     void Awake()
     {
-        MainMenuUI.LoadConfig();
         DysonSphereProgramMenuMod.MyPatcher.ApplyPatches();
     }
 
@@ -107,16 +105,9 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
         public static bool BeltSpeedMod = false;
         public static int BeltMultiplier = 1;
-        private static bool configLoaded = false;
 
         public static void Draw()
         {
-            if (!configLoaded)
-            {
-                LoadConfig();
-                configLoaded = true;
-            }
-
             UIHelper.DrawUI(ref mainMenuRect, 0, IsVisible, MainMenuWindow, "Main Menu");
         }
 
@@ -139,29 +130,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             }
 
             GUILayout.EndVertical();
-        }
-
-        public static void LoadConfig()
-        {
-            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
-
-            if (!File.Exists(configPath))
-            {
-                File.WriteAllText(configPath, "BeltMod:true\nBeltmultiplier:2");
-                VitaminLogger.LogInfo("Config file not found. Created default config.");
-            }
-
-            foreach (var line in File.ReadAllLines(configPath))
-            {
-                string[] parts = line.Split(':');
-                if (parts.Length == 2)
-                {
-                    if (line.StartsWith("BeltMod")) BeltSpeedMod = parts[1].Trim().ToLower() == "true";
-                    if (line.StartsWith("Beltmultiplier")) int.TryParse(parts[1].Trim(), out BeltMultiplier);
-                }
-            }
-
-            VitaminLogger.LogInfo($"Config Loaded: BeltSpeedMod={BeltSpeedMod}, BeltMultiplier={BeltMultiplier}");
         }
     }
     public class MiscUI
@@ -228,7 +196,7 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
     }
     public class MachineSettingsUI
     {
-        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 360);
+        private static Rect machineSettingsRect = new Rect(Screen.width - 250, 770, 200, 440);
         public static bool IsVisible = false;
 
         // Dyson Sphere Einstellungen
@@ -266,6 +234,13 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             GUILayout.Label("<b>Towers</b>");
             GUILayout.Label("Reload Speed: " + TowerReloadSpeed.ToString("0.00") + "x");
             TowerReloadSpeed = GUILayout.HorizontalSlider(TowerReloadSpeed, 1f, 10f);
+
+            GUILayout.Space(10);
+
+            GUILayout.Label("<b>Belts</b>");
+            MainMenuUI.BeltSpeedMod = GUILayout.Toggle(MainMenuUI.BeltSpeedMod, "Enable Belt Speed Mod");
+            GUILayout.Label("Belt Speed: " + MainMenuUI.BeltMultiplier.ToString("0.00") + "x");
+            MainMenuUI.BeltMultiplier = (int)GUILayout.HorizontalSlider(MainMenuUI.BeltMultiplier, 1f, 20f);
 
             GUILayout.Space(10);
 
