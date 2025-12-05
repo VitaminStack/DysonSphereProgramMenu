@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\" />
+    <Folder Include="SDK\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
