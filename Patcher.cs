@@ -2,7 +2,6 @@ using ABN;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using static DysonSphereProgramMenu;
@@ -184,29 +183,6 @@ namespace DysonSphereProgramMenuMod
         }
     }
 
-
-    [HarmonyPatch(typeof(PrefabDesc), "ReadPrefab")]
-    public static class PrefabDesc_ReadPrefab_Patch
-    {
-        static void Postfix(ref PrefabDesc __instance, GameObject _prefab, GameObject _colliderPrefab)
-        {
-            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod) return;
-
-            BeltDesc belt = __instance.prefab.GetComponentInChildren<BeltDesc>(true);
-            if (belt != null)
-            {
-                __instance.beltSpeed = belt.speed * DysonSphereProgramMenu.MainMenuUI.BeltMultiplier;
-            }
-        }
-        // Wird beim Laden des Patches ausgeführt, um zu prüfen, ob der Patch erfolgreich war.
-        static PrefabDesc_ReadPrefab_Patch()
-        {
-            if (DysonSphereProgramMenu.DebugMode)
-            {
-                VitaminLogger.LogInfo("[Patch Applied] PrefabDesc.ReadPrefab erfolgreich gepatcht.");
-            }
-        }
-    }
 
     [HarmonyPatch(typeof(Mecha), "GameTick")]
     public static class Mecha_GameTick_Patch

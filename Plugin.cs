@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using UnityEngine;
-using System.IO;
 
 [BepInPlugin("com.example.myplugin", "DysonSphereProgramMenu", "2.0.0")]
 public class DysonSphereProgramMenu : BaseUnityPlugin
@@ -11,7 +10,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
     void Awake()
     {
-        MainMenuUI.LoadConfig();
         DysonSphereProgramMenuMod.MyPatcher.ApplyPatches();
     }
 
@@ -105,18 +103,8 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         public static bool IsVisible = true;
         public static bool UnlockAll = false;
 
-        public static bool BeltSpeedMod = false;
-        public static int BeltMultiplier = 1;
-        private static bool configLoaded = false;
-
         public static void Draw()
         {
-            if (!configLoaded)
-            {
-                LoadConfig();
-                configLoaded = true;
-            }
-
             UIHelper.DrawUI(ref mainMenuRect, 0, IsVisible, MainMenuWindow, "Main Menu");
         }
 
@@ -139,29 +127,6 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
             }
 
             GUILayout.EndVertical();
-        }
-
-        public static void LoadConfig()
-        {
-            string configPath = Path.Combine(Application.dataPath, "../BepInEx/plugins/DysonMenu/config.txt");
-
-            if (!File.Exists(configPath))
-            {
-                File.WriteAllText(configPath, "BeltMod:true\nBeltmultiplier:2");
-                VitaminLogger.LogInfo("Config file not found. Created default config.");
-            }
-
-            foreach (var line in File.ReadAllLines(configPath))
-            {
-                string[] parts = line.Split(':');
-                if (parts.Length == 2)
-                {
-                    if (line.StartsWith("BeltMod")) BeltSpeedMod = parts[1].Trim().ToLower() == "true";
-                    if (line.StartsWith("Beltmultiplier")) int.TryParse(parts[1].Trim(), out BeltMultiplier);
-                }
-            }
-
-            VitaminLogger.LogInfo($"Config Loaded: BeltSpeedMod={BeltSpeedMod}, BeltMultiplier={BeltMultiplier}");
         }
     }
     public class MiscUI
