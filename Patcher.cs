@@ -41,50 +41,16 @@ namespace DysonSphereProgramMenuMod
     }
     public static class TurretComponent_Patches
     {
-        private struct RangeState
-        {
-            public float Max;
-            public float Space;
-        }
-
         public static void ApplyPatch(Harmony harmony)
         {
             MethodInfo shootMethod = AccessTools.Method(typeof(TurretComponent), nameof(TurretComponent.Shoot));
             harmony.Patch(shootMethod, prefix: new HarmonyMethod(typeof(TurretComponent_Patches), nameof(ScaleReloadSpeed)));
-
-            MethodInfo searchMethod = AccessTools.Method(typeof(TurretComponent), nameof(TurretComponent.Search));
-            harmony.Patch(searchMethod, new HarmonyMethod(typeof(TurretComponent_Patches), nameof(ScaleRangePrefix)), new HarmonyMethod(typeof(TurretComponent_Patches), nameof(RestoreRange)));
-
-            MethodInfo checkRangeMethod = AccessTools.Method(typeof(TurretComponent), nameof(TurretComponent.CheckEnemyIsInAttackRange));
-            harmony.Patch(checkRangeMethod, new HarmonyMethod(typeof(TurretComponent_Patches), nameof(ScaleRangePrefix)), new HarmonyMethod(typeof(TurretComponent_Patches), nameof(RestoreRange)));
-
-            MethodInfo checkTargetMethod = AccessTools.Method(typeof(TurretComponent), nameof(TurretComponent.CheckTargetValidBeforeShoot));
-            harmony.Patch(checkTargetMethod, new HarmonyMethod(typeof(TurretComponent_Patches), nameof(ScaleRangePrefix)), new HarmonyMethod(typeof(TurretComponent_Patches), nameof(RestoreRange)));
         }
 
         private static void ScaleReloadSpeed(ref float power)
         {
             float multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.TowerReloadSpeed);
             power *= multiplier;
-        }
-
-        private static void ScaleRangePrefix(PrefabDesc pdesc, out RangeState __state)
-        {
-            __state = new RangeState
-            {
-                Max = pdesc.turretMaxAttackRange,
-                Space = pdesc.turretSpaceAttackRange
-            };
-
-            float multiplier = Mathf.Max(0.1f, DysonSphereProgramMenu.MachineSettingsUI.TowerRange);
-            pdesc.turretMaxAttackRange *= multiplier;
-            pdesc.turretSpaceAttackRange *= multiplier;
-        }
-
-        private static void RestoreRange(PrefabDesc pdesc, RangeState __state)
-        {
-            pdesc.turretMaxAttackRange = __state.Max;
-            pdesc.turretSpaceAttackRange = __state.Space;
         }
     }
     public static class Patches
