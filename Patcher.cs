@@ -122,11 +122,22 @@ namespace DysonSphereProgramMenuMod
 
             harmony.Patch(
                 AccessTools.Method(typeof(CargoTraffic), nameof(CargoTraffic.SetBeltState), new Type[] { typeof(int), typeof(int) }),
-                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltSpeed))
+                prefix: new HarmonyMethod(typeof(CargoTraffic_BeltSpeed_Patch), nameof(ScaleBeltState))
             );
         }
 
-        private static void ScaleBeltSpeed(ref int state)
+        private static void ScaleBeltSpeed(ref int speed)
+        {
+            if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod)
+            {
+                return;
+            }
+
+            int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
+            speed = Math.Max(1, speed * multiplier);
+        }
+
+        private static void ScaleBeltState(ref int state)
         {
             if (!DysonSphereProgramMenu.MainMenuUI.BeltSpeedMod)
             {
