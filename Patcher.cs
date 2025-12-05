@@ -107,6 +107,8 @@ namespace DysonSphereProgramMenuMod
     }
     public static class CargoPath_BeltSpeedMultiplier_Patch
     {
+        private static readonly AccessTools.FieldRef<CargoPath, int> ChunkCountRef = AccessTools.FieldRefAccess<CargoPath, int>("chunkCount");
+
         public static void ApplyPatch(Harmony harmony)
         {
             MethodInfo targetMethod = AccessTools.Method(typeof(CargoPath), nameof(CargoPath.Update));
@@ -118,13 +120,13 @@ namespace DysonSphereProgramMenuMod
         private static bool ApplyBeltMultiplier(CargoPath __instance, ref int[] __state)
         {
             int multiplier = Math.Max(1, DysonSphereProgramMenu.MainMenuUI.BeltMultiplier);
-            if (multiplier == 1 || __instance.chunks == null || __instance.chunkCount == 0)
+            int chunkCount = ChunkCountRef(__instance);
+            if (multiplier == 1 || __instance.chunks == null || chunkCount == 0)
             {
                 __state = null;
                 return true;
             }
 
-            int chunkCount = __instance.chunkCount;
             __state = new int[chunkCount];
 
             for (int i = 0; i < chunkCount; i++)
@@ -145,7 +147,7 @@ namespace DysonSphereProgramMenuMod
                 return;
             }
 
-            int chunkCount = Math.Min(__state.Length, __instance.chunkCount);
+            int chunkCount = Math.Min(__state.Length, ChunkCountRef(__instance));
             for (int i = 0; i < chunkCount; i++)
             {
                 int speedIndex = i * 3 + 2;
