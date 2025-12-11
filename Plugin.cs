@@ -206,6 +206,12 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
         // Produktion Einstellungen
         public static float SmelterSpeed = 1f;
         public static float AssemblerSpeed = 1f;
+        public static float ChemicalSpeed = 1f;
+        public static float RefinerySpeed = 1f;
+        public static float ParticleSpeed = 1f;
+        public static float ExchangeSpeed = 1f;
+        public static float PhotonStoreSpeed = 1f;
+        public static float FractionateSpeed = 1f;
         public static float MinerSpeed = 1f;
 
         public static void Draw() => UIHelper.DrawUI(ref machineSettingsRect, 3, IsVisible, MachineSettingsWindow, "Machine Settings");
@@ -240,6 +246,24 @@ public class DysonSphereProgramMenu : BaseUnityPlugin
 
             GUILayout.Label("Assembler Speed: " + AssemblerSpeed.ToString("0.00") + "x");
             AssemblerSpeed = GUILayout.HorizontalSlider(AssemblerSpeed, 1f, 25f);
+
+            GUILayout.Label("Chemical Plant Speed: " + ChemicalSpeed.ToString("0.00") + "x");
+            ChemicalSpeed = GUILayout.HorizontalSlider(ChemicalSpeed, 1f, 25f);
+
+            GUILayout.Label("Refinery Speed: " + RefinerySpeed.ToString("0.00") + "x");
+            RefinerySpeed = GUILayout.HorizontalSlider(RefinerySpeed, 1f, 25f);
+
+            GUILayout.Label("Particle Collider Speed: " + ParticleSpeed.ToString("0.00") + "x");
+            ParticleSpeed = GUILayout.HorizontalSlider(ParticleSpeed, 1f, 25f);
+
+            GUILayout.Label("Exchange Speed: " + ExchangeSpeed.ToString("0.00") + "x");
+            ExchangeSpeed = GUILayout.HorizontalSlider(ExchangeSpeed, 1f, 25f);
+
+            GUILayout.Label("Photon Store Speed: " + PhotonStoreSpeed.ToString("0.00") + "x");
+            PhotonStoreSpeed = GUILayout.HorizontalSlider(PhotonStoreSpeed, 1f, 25f);
+
+            GUILayout.Label("Fractionator Speed: " + FractionateSpeed.ToString("0.00") + "x");
+            FractionateSpeed = GUILayout.HorizontalSlider(FractionateSpeed, 1f, 25f);
 
             GUILayout.Label("Mining Speed: " + MinerSpeed.ToString("0.00") + "x");
             MinerSpeed = GUILayout.HorizontalSlider(MinerSpeed, 1f, 25f);

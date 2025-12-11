@@ -51,13 +51,32 @@ namespace DysonSphereProgramMenuMod
         private static void ScaleManufacturingSpeed(ref AssemblerComponent __instance, ref float power)
         {
             float multiplier = 1f;
-            if (__instance.recipeType == ERecipeType.Smelt)
+            switch (__instance.recipeType)
             {
-                multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.SmelterSpeed);
-            }
-            else if (__instance.recipeType == ERecipeType.Assemble)
-            {
-                multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.AssemblerSpeed);
+                case ERecipeType.Smelt:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.SmelterSpeed);
+                    break;
+                case ERecipeType.Assemble:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.AssemblerSpeed);
+                    break;
+                case ERecipeType.Chemical:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.ChemicalSpeed);
+                    break;
+                case ERecipeType.Refine:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.RefinerySpeed);
+                    break;
+                case ERecipeType.Particle:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.ParticleSpeed);
+                    break;
+                case ERecipeType.Exchange:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.ExchangeSpeed);
+                    break;
+                case ERecipeType.PhotonStore:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.PhotonStoreSpeed);
+                    break;
+                case ERecipeType.Fractionate:
+                    multiplier = Mathf.Max(1f, DysonSphereProgramMenu.MachineSettingsUI.FractionateSpeed);
+                    break;
             }
 
             power *= multiplier;
